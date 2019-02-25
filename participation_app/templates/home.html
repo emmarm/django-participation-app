@@ -1,0 +1,14 @@
+<div>
+  <h2>All Students</h2>
+  <ul>
+    {% for student in students %}
+    <li>
+      <a href="{% url 'student' student.id %}">
+        <span>
+          {{ student.full_name | capfirst }} - {{ student.year_in_school }}
+        </span>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+</div>

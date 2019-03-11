@@ -5,7 +5,7 @@ from participation_app import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.home, name='home'),
-    path('student/<id>', views.student, name='student'),
-    path('chosen', views.chosen, name='chosen'),
+    path('', views.HomeView.as_view(), name='home'),
+    path('student/<slug:pk>', views.StudentView.as_view(), name='student'),
+    path('chosen', views.ChosenView.as_view(), name='chosen'),
 ]

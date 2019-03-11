@@ -1,4 +1,8 @@
 <div>
   <h3>Someone was picked!</h3>
   {{ chosen }}
+  <p>Award Points</p>
+  {% for point_award in point_awards %}
+  <button value="{point_award.0}">{{ point_award.1 }}</button>
+  {% endfor %}
 </div>

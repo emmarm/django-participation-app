@@ -1,7 +1,5 @@
 import math
 import random
-# from django.shortcuts import render
-# from django.http import Http404
 from django.views import generic
 from django.views.generic.base import TemplateResponseMixin
 from django.db.models import Min, Count
@@ -15,56 +13,40 @@ class HomeView(generic.ListView):
     context_object_name = 'students'
 
 
-# def home(req):
-#     students = Student.objects.all()
-#     return render(req, 'home.html', {'students': students})
-
-
 class StudentView(generic.DetailView):
     model = Student
     template_name = 'student.html'
     context_object_name = 'student'
 
-# def student(req, id):
-#     try:
-#         student = Student.objects.get(id=id)
-#     except Student.DoesNotExist:
-#         raise Http404('Student not found')
-#     return render(req, 'student.html', {'student': student})
 
-
-class ChosenView(generic.ListView):
+class ChosenView(TemplateResponseMixin, generic.View):
     template_name = 'chosen.html'
-    context_object_name = 'chosen'
-    point_awards = [
-        (0, 'None'),
-        (1, 'Minimal'),
-        (2, 'Good'),
-        (3, 'Great'),
-        (5, 'Outstanding!')
-    ]
-    extra_context = {'point_awards': point_awards}
 
     def get_queryset(self):
-        # get only present students and order by recently called
-        students = Student.objects.exclude(
-            present='AB').order_by('-last_called')
-        # find number of times least called student was called
-        least_called = students.aggregate(Min('times_called'))[
-            'times_called__min']
-        eligible_students = students.filter(
-            times_called__lte=least_called * 1.4)[1:]
-        chosen = random.randrange(0, len(eligible_students))
-        return eligible_students[chosen]
+        return Student.eligible_students.all()
+
+    def get(self, request):
+        eligible_students = self.get_queryset()
+        point_awards = [
+            (0, 'None'),
+            (1, 'Minimal'),
+            (2, 'Good'),
+            (3, 'Great'),
+            (5, 'Outstanding!')
+        ]
+        chosen = None
+        if len(eligible_students) > 0:
+            chosen_index = random.randrange(0, len(eligible_students))
+            chosen = eligible_students[chosen_index]
+        context = {
+            'chosen': chosen,
+            'point_awards': point_awards
+        }
+        self.render_to_response(context)
 
 
-# def chosen(req):
-#     # get only present students and order by recently called
-#     students = Student.objects.exclude(present='AB').order_by('-last_called')
-#     # find number of times least called student was called
-#     least_called = students.aggregate(Min('times_called'))[
-#         'times_called__min']
-#     eligible_students = students.filter(
-#         times_called__lte=least_called * 1.4)[1:]
-#     chosen = random.randrange(0, len(eligible_students))
-#     return render(req, 'chosen.html', {'chosen': eligible_students[chosen]})
+class AwardPointsView(TemplateResponseMixin, generic.View):
+    template_name = 'points.html'
+
+    def get_queryset(self):
+        return Student.objects.filter()

@@ -63,13 +63,13 @@ class Student(models.Model):
     def full_name(self):
         return self.first_name + ' ' + self.last_name
 
-    def get_participation_points(self, pk):
+    def get_participation_points(self):
         points = Participation.objects.filter(
-            student_id=pk).aggregate(Sum('points'))
+            student_id=self.pk).aggregate(Sum('points'))
         return points['points__sum']
 
-    def get_times_called(self, pk):
-        return Participation.objects.filter(student_id=pk).count()
+    def get_times_called(self):
+        return Participation.objects.filter(student_id=self.pk).count()
 
     def __str__(self):
         return self.first_name + ' ' + self.last_name

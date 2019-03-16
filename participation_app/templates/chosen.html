@@ -4,7 +4,16 @@
   {{ chosen.participation_points }}
   {{ chosen.times_called }}
   <p>Award Points</p>
-  {% for point_award in point_awards %}
-  <button value="{point_award.0}">{{ point_award.1 }}</button>
-  {% endfor %}
+  <form action="{% url 'award_points' chosen.id %}" method="post">
+    {% csrf_token %} {% for point_award in point_awards %}
+    <input
+      type="radio"
+      id="points_{{ point_award.0 }}"
+      name="points"
+      value="{{ point_award.0 }}"
+    />
+    <label for="points_{{ point_award.0 }}">{{ point_award.1 }}</label>
+    {% endfor %}
+    <button type="submit">Award Points</button>
+  </form>
 </div>

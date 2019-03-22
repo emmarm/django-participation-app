@@ -1,3 +1,5 @@
 <div>
-  {{ student.first_name }}
+  {{ student.full_name }} received {{ participation.points }} point{{ participation.points|pluralize }}.
 </div>
+<a href="{% url 'choose' %}">Pick again</a>
+<a href="{% url 'home' %}">Return to class listing</a>

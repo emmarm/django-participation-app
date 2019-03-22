@@ -54,14 +54,18 @@ class Student(models.Model):
     )
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
+    full_name = models.CharField(max_length=100)
     last_called = models.DateTimeField(null=True, blank=True)
     participation_points = models.IntegerField(default=0)
     times_called = models.IntegerField(default=0)
     objects = models.Manager()
     eligible_students = EligibleStudentsManager()
 
-    def full_name(self):
-        return self.first_name + ' ' + self.last_name
+    def get_full_name(self):
+        return self.first_name.title() + ' ' + self.last_name.title()
+
+    def get_last_called(self):
+        return self.participations.order_by('-called').first().called
 
     def get_participation_points(self):
         points = Participation.objects.filter(
@@ -75,6 +79,8 @@ class Student(models.Model):
         return self.first_name + ' ' + self.last_name
 
     def save(self, *args, **kwargs):
+        self.full_name = self.get_full_name()
+        self.last_called = self.get_last_called()
         self.participation_points = self.get_participation_points()
         self.times_called = self.get_times_called()
         super(Student, self).save(*args, **kwargs)

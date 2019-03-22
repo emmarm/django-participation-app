@@ -12,6 +12,7 @@ class HomeView(generic.ListView):
     model = Student
     template_name = 'home.html'
     context_object_name = 'students'
+    ordering = 'full_name'
 
 
 class StudentView(generic.DetailView):
@@ -45,27 +46,10 @@ class ChosenView(generic.DetailView):
         (5, 'Outstanding!')
     ]
     context_object_name = 'chosen'
+
     extra_context = {
         'point_awards': point_awards
     }
-
-    # def get_queryset(self, pk):
-    #     return Student.objects.filter(id=pk).first()
-
-    # def get(self, request, pk):
-    #     chosen = self.get_queryset(pk)
-    #     point_awards = [
-    #         (0, 'None'),
-    #         (1, 'Minimal'),
-    #         (2, 'Good'),
-    #         (3, 'Great'),
-    #         (5, 'Outstanding!')
-    #     ]
-    #     context = {
-    #         'chosen': chosen,
-    #         'point_awards': point_awards
-    #     }
-    #     return self.render_to_response(context)
 
 
 class AwardPointsView(generic.View):
@@ -96,7 +80,9 @@ class PointsAwardedView(TemplateResponseMixin, generic.View):
 
     def get(self, response, pk):
         student = self.get_queryset(pk)
-        context = {'student': student}
+        latest_participation = student.participations.order_by(
+            '-called').first()
+        context = {'participation': latest_participation, 'student': student}
         return self.render_to_response(context)
 
 
